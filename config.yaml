@@ -1,0 +1,38 @@
+filters:
+  min_budget_eur: 100
+  max_age_hours: 2
+  languages: [en, fr, es]
+  keywords:
+    - "landing page"
+    - "one.?pager"
+    - "site vitrine"
+    - "page d.atterrissage"
+    - "página de aterrizaje"
+    - "site web simple"
+    - "sitio web simple"
+    - "next.?js"
+    - "react"
+    - "tailwind"
+    - "framer"
+    - "webflow"
+    - "astro"
+    - "website"
+    - "site web"
+    - "sitio web"
+
+profile:
+  summary_en: "Bilingual FR/EN/ES full-stack dev. I ship fast, clean landing pages in Next.js + Tailwind, usually in 48h."
+  summary_fr: "Dev full-stack bilingue FR/EN/ES. Je livre des landing pages rapides et propres en Next.js + Tailwind, généralement sous 48h."
+  summary_es: "Desarrollador full-stack bilingüe FR/EN/ES. Entrego landing pages rápidas y limpias con Next.js + Tailwind, normalmente en 48h."
+
+nitter_queries:
+  - '"need a landing page" lang:en'
+  - '"looking for a developer" landing page lang:en'
+  - '"cherche développeur" landing page lang:fr'
+  - '"besoin d''un site" lang:fr'
+  - '"busco desarrollador" landing page lang:es'
+
+reddit_subs:
+  - forhire
+  - slavelabour
+  - hiring
