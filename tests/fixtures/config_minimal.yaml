@@ -1,0 +1,11 @@
+filters:
+  min_budget_eur: 50
+  max_age_hours: 1
+  languages: [en]
+  keywords: ["react", "landing page"]
+profile:
+  summary_en: "test profile"
+  summary_fr: "profil test"
+  summary_es: "perfil test"
+nitter_queries: []
+reddit_subs: []
