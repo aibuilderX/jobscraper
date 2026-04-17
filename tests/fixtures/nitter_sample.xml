@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <channel>
+    <title>Nitter search / landing page</title>
+    <link>https://nitter.net/search</link>
+    <description>Tweets matching: landing page</description>
+    <item>
+      <title>alice: Anyone want to help me build a landing page this weekend? Budget $300.</title>
+      <dc:creator>@alice</dc:creator>
+      <description>Anyone want to help me build a landing page this weekend? Budget $300.</description>
+      <pubDate>Fri, 17 Apr 2026 18:30:00 GMT</pubDate>
+      <guid>https://nitter.net/alice/status/111</guid>
+      <link>https://twitter.com/alice/status/111</link>
+    </item>
+    <item>
+      <title>bob: need a landing page dev, next.js preferred, DM me</title>
+      <dc:creator>@bob</dc:creator>
+      <description>need a landing page dev, next.js preferred, DM me</description>
+      <pubDate>Fri, 17 Apr 2026 17:45:00 GMT</pubDate>
+      <guid>https://nitter.net/bob/status/222</guid>
+      <link>https://twitter.com/bob/status/222</link>
+    </item>
+    <item>
+      <title>claire: Cherche développeur pour créer une landing page rapidement</title>
+      <dc:creator>@claire</dc:creator>
+      <description>Cherche développeur pour créer une landing page rapidement</description>
+      <pubDate>Fri, 17 Apr 2026 16:10:00 GMT</pubDate>
+      <guid>https://nitter.net/claire/status/333</guid>
+      <link>https://twitter.com/claire/status/333</link>
+    </item>
+  </channel>
+</rss>
