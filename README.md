@@ -1,8 +1,12 @@
 # jobscraper
 
-Stateless 5-minute cron that scrapes **Codeur.com**, **Reddit**, and **Twitter/Nitter** for
+Stateless 5-minute cron that scrapes **Codeur.com**, **RemoteOK**, and **Twitter/Nitter** for
 freelance landing-page gigs, drafts a tailored pitch with **GLM-4.6** (via z.ai),
 and pushes it to **Telegram**.
+
+> **Note:** Reddit was dropped in favour of RemoteOK. Reddit's November 2025 Responsible Builder Policy
+> closed self-service API access for personal scrapers, and unauthenticated requests from
+> GitHub Actions runners get IP-blocked. RemoteOK exposes a clean public JSON feed with no gate.
 
 Targets bilingual FR/EN/ES freelancers. Filters on freshness (<2h), language,
 budget floor (€100), and a keyword regex. State is persisted in
@@ -64,7 +68,6 @@ Everything is in [config.yaml](config.yaml):
 - `filters.min_budget_eur` — budget floor (jobs with no budget pass).
 - `filters.max_age_hours` — reject anything older than this.
 - `filters.languages` — accepted post languages.
-- `reddit_subs` — subreddits to poll.
 - `nitter_queries` — Twitter search queries via Nitter RSS.
 - `profile` — your pitch blurb (EN / FR / ES).
 
@@ -78,6 +81,5 @@ Commit changes; the next cron run uses the updated config.
 - **Codeur HTML drift:** the parser relies on the current project-card DOM.
   If Codeur redesigns, [tests/test_codeur.py](tests/test_codeur.py) will fail
   first — update the fixture and selectors together.
-- **Reddit auth:** unauthenticated `.json` endpoints are rate-limited.
-  Usually fine at 5-minute cadence, but if you hit 429s, add a Reddit app
-  and use OAuth.
+- **RemoteOK rate limit:** the public API doesn't advertise a rate limit but
+  asks for attribution if you expose the data publicly. A 5-minute cadence is fine.

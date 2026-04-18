@@ -32,7 +32,4 @@ nitter_queries:
   - '"besoin d''un site" lang:fr'
   - '"busco desarrollador" landing page lang:es'
 
-reddit_subs:
-  - forhire
-  - slavelabour
-  - hiring
+reddit_subs: []  # deprecated: Reddit API locked down in 2025 (kept for config compat)

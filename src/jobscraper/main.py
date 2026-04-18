@@ -7,7 +7,7 @@ from .filter import is_relevant
 from .store import SeenStore
 from .drafter import draft_pitch, get_client
 from .notify import send_job
-from .sources import codeur, reddit, twitter
+from .sources import codeur, remoteok, twitter
 from .models import Job
 
 log = logging.getLogger("jobscraper")
@@ -20,12 +20,12 @@ logging.basicConfig(
 async def fetch_all(cfg: Config) -> list[Job]:
     results = await asyncio.gather(
         codeur.fetch(),
-        reddit.fetch(cfg.reddit_subs),
+        remoteok.fetch(),
         twitter.fetch(cfg.nitter_queries),
         return_exceptions=True,
     )
     jobs: list[Job] = []
-    for name, result in zip(["codeur", "reddit", "twitter"], results):
+    for name, result in zip(["codeur", "remoteok", "twitter"], results):
         if isinstance(result, Exception):
             log.warning("source %s failed: %s", name, result)
             continue
