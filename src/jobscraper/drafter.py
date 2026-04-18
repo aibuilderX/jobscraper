@@ -4,7 +4,8 @@ from .config import Profile
 from .models import Job
 
 MODEL = "glm-4.6"
-BASE_URL = "https://api.z.ai/api/paas/v4/"
+# Z.ai subscription (GLM Coding Plan) uses a different endpoint than pay-as-you-go.
+BASE_URL = "https://api.z.ai/api/coding/paas/v4/"
 
 SYSTEM_TMPL = (
     "You are drafting a short freelance pitch. Write 4-5 sentences in the same "
@@ -42,6 +43,6 @@ def draft_pitch(job: Job, profile: Profile, client: OpenAI | None = None) -> str
             {"role": "user", "content": user},
         ],
         temperature=0.7,
-        max_tokens=400,
+        max_tokens=2000,
     )
     return resp.choices[0].message.content.strip()
