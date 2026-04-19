@@ -1,0 +1,117 @@
+name: builder
+on:
+  workflow_dispatch:
+    inputs:
+      job_id:
+        description: "Sanitized job id (matches state/pending_builds/<id>.json)"
+        required: true
+        type: string
+
+concurrency:
+  group: builder-${{ inputs.job_id }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      JOB_ID: ${{ inputs.job_id }}
+      SITE_DIR: sites/${{ inputs.job_id }}
+      BRIEF_PATH: state/pending_builds/${{ inputs.job_id }}.json
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify brief exists
+        run: |
+          test -f "$BRIEF_PATH" || { echo "no brief at $BRIEF_PATH"; exit 1; }
+          echo "brief:"
+          cat "$BRIEF_PATH"
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: pnpm
+
+      - name: Scaffold Next.js site
+        run: |
+          mkdir -p "$SITE_DIR"
+          cd "$SITE_DIR"
+          pnpm create next-app@latest . \
+            --ts --tailwind --app --src-dir --use-pnpm \
+            --no-eslint --no-import-alias --yes
+          pnpm install
+
+      - name: Stage brief for Claude
+        run: cp "$BRIEF_PATH" "$SITE_DIR/BRIEF.json"
+
+      - name: Run Claude Code orchestration
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt_file: .github/prompts/builder.md
+          claude_args: --max-turns 40 --allowed-tools Bash,Edit,Read,Write,Grep,Glob
+
+      - name: Verify build passes
+        working-directory: ${{ env.SITE_DIR }}
+        run: pnpm build
+
+      - name: Install Vercel CLI
+        run: pnpm add -g vercel@latest
+
+      - name: Deploy to Vercel
+        id: deploy
+        working-directory: ${{ env.SITE_DIR }}
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          vercel link --yes --project "jobscraper-${JOB_ID}" --token="$VERCEL_TOKEN" || true
+          vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
+          vercel build --prod --token="$VERCEL_TOKEN"
+          url=$(vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN" | tail -1)
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          echo "deployed: $url"
+
+      - name: Notify Telegram
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          URL: ${{ steps.deploy.outputs.url }}
+        run: |
+          python - <<'PY'
+          import json, os, urllib.request
+          token = os.environ["TELEGRAM_BOT_TOKEN"]
+          chat_id = os.environ["TELEGRAM_CHAT_ID"]
+          url = os.environ["URL"]
+          job_id = os.environ["JOB_ID"]
+          text = f"🚀 *Preview ready* for `{job_id}`\n{url}"
+          req = urllib.request.Request(
+              f"https://api.telegram.org/bot{token}/sendMessage",
+              data=json.dumps({
+                  "chat_id": chat_id,
+                  "text": text,
+                  "parse_mode": "Markdown",
+                  "disable_web_page_preview": False,
+              }).encode(),
+              headers={"Content-Type": "application/json"},
+          )
+          with urllib.request.urlopen(req, timeout=10) as r:
+              print(r.read().decode())
+          PY
+
+      - name: Commit generated site
+        run: |
+          git config user.name "jobscraper-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add "$SITE_DIR" || true
+          if ! git diff --quiet --staged; then
+            git commit -m "feat(site): build for ${JOB_ID} [skip ci]"
+            git push
+          fi

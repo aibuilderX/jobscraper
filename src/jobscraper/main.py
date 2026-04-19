@@ -7,6 +7,7 @@ from .filter import is_relevant
 from .store import SeenStore
 from .drafter import draft_pitch, get_client
 from .notify import send_job
+from .builder import is_website_job, queue_build, build_command
 from .sources import codeur, remoteok, twitter
 from .models import Job
 
@@ -58,8 +59,15 @@ def run(
         except Exception as e:
             log.warning("draft failed for %s: %s", job.id, e)
             draft = "(draft failed — reply manually)"
+        build_cmd = None
+        if is_website_job(job):
+            try:
+                queue_build(job)
+                build_cmd = build_command(job)
+            except Exception as e:
+                log.warning("queue_build failed for %s: %s", job.id, e)
         try:
-            send_job(job, draft)
+            send_job(job, draft, build_cmd=build_cmd)
             store.add(job.id)
             sent += 1
         except Exception as e:
