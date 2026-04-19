@@ -1,0 +1,11 @@
+{
+  "id": "test:fresh-1",
+  "source": "test",
+  "title": "React landing page",
+  "description": "React + Tailwind",
+  "budget_eur": 200.0,
+  "language": "en",
+  "url": "https://example.com",
+  "posted_at": "2026-04-19T03:50:03.668325+00:00",
+  "raw": {}
+}
